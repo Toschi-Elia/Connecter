@@ -22,6 +22,14 @@
         </activity>
         <service android:name=".AutoSpotifyService"
                  android:foregroundServiceType="connectedDevice"/>
+        <receiver
+            android:name=".BluetoothReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.bluetooth.device.action.ACL_CONNECTED" />
+                <action android:name="android.bluetooth.device.action.ACL_DISCONNECTED" />
+            </intent-filter>
+        </receiver>
     </application>
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
 
@@ -29,4 +37,6 @@
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 </manifest>
+

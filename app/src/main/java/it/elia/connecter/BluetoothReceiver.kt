@@ -1,16 +1,17 @@
 package it.elia.connecter
+
+import android.Manifest
 import android.bluetooth.BluetoothDevice
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.media.AudioManager
 import android.net.Uri
-import android.view.KeyEvent
 import android.os.Build
-import android.Manifest
-import android.content.pm.PackageManager
+import android.view.KeyEvent
+import android.util.Log
 import androidx.core.content.ContextCompat
-
 
 class BluetoothReceiver : BroadcastReceiver() {
 
@@ -18,10 +19,8 @@ class BluetoothReceiver : BroadcastReceiver() {
         val action = intent.action
 
         val device: BluetoothDevice? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            // Per Android 13 e successivi: usiamo il nuovo metodo type-safe
             intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE, BluetoothDevice::class.java)
         } else {
-            // Per Android 12 e precedenti: usiamo il vecchio metodo e "sopprimiamo" l'avviso
             @Suppress("DEPRECATION")
             intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE) as? BluetoothDevice
         }
@@ -41,37 +40,43 @@ class BluetoothReceiver : BroadcastReceiver() {
         if (device != null && hasPermission) {
 
             if (device.name == targetDeviceName) {
-
                 val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
-                when (action) {
 
-                    // CASO 1: LA MACCHINA SI È CONNESSA
+                // Trucco di concatenazione per evitare corruzioni del testo nella chat.
+                // Questa stringa diventerà esattamente il nome del pacchetto ufficiale di Spotify.
+                val spotifyPackage = "com" + "." + "spotify" + "." + "music"
+
+                when (action) {
                     BluetoothDevice.ACTION_ACL_CONNECTED -> {
+                        Log.e("AutoSpotifyTest", ">>> 3. NOMI COINCIDONO! Regolo volume e avvio Spotify...")
 
                         // 1. Imposta il volume scelto dall'utente
                         val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
                         val targetVolume = sharedPrefs.getInt("TARGET_VOLUME", maxVolume)
                         audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, targetVolume, 0)
 
-                        // 2. Apri Spotify sui brani preferiti
-                        val spotifyIntent =
-                            Intent(Intent.ACTION_VIEW, Uri.parse("spotify:collection:tracks"))
-                        spotifyIntent.setPackage("com.spotify.music")
+                        // 2. Apri Spotify direttamente sulla schermata dei brani che ti piacciono
+                        val spotifyIntent = Intent(Intent.ACTION_VIEW, Uri.parse("spotify:collection:tracks"))
+                        spotifyIntent.setPackage(spotifyPackage)
                         spotifyIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 
                         try {
                             context.startActivity(spotifyIntent)
                         } catch (e: Exception) {
+                            Log.e("AutoSpotifyTest", ">>> Errore nell'apertura di Spotify: ${e.message}")
                             e.printStackTrace()
                         }
 
-                        // 3. Premi Play
+                        // 3. Invia il comando hardware di PLAY indirizzato esclusivamente a Spotify
                         val playIntent = Intent(Intent.ACTION_MEDIA_BUTTON)
+                        playIntent.setPackage(spotifyPackage)
                         playIntent.putExtra(
                             Intent.EXTRA_KEY_EVENT,
                             KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PLAY)
                         )
+
                         val releaseIntent = Intent(Intent.ACTION_MEDIA_BUTTON)
+                        releaseIntent.setPackage(spotifyPackage)
                         releaseIntent.putExtra(
                             Intent.EXTRA_KEY_EVENT,
                             KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_PLAY)
@@ -81,21 +86,19 @@ class BluetoothReceiver : BroadcastReceiver() {
                         context.sendOrderedBroadcast(releaseIntent, null)
                     }
 
-                    // CASO 2: LA MACCHINA SI È DISCONNESSA
                     BluetoothDevice.ACTION_ACL_DISCONNECTED -> {
-
-                        // Riportiamo il volume dei media a zero (muto) o a un valore minimo
+                        Log.e("AutoSpotifyTest", ">>> Disconnessione rilevata. Metto in pausa.")
                         audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 0, 0)
 
-                        // OPZIONALE: Invia il comando "Pausa" a Spotify
-                        // Spesso Spotify va in pausa da solo quando si scollega il Bluetooth,
-                        // ma se vuoi essere sicuro al 100%, puoi forzare la pausa così:
                         val pauseIntent = Intent(Intent.ACTION_MEDIA_BUTTON)
+                        pauseIntent.setPackage(spotifyPackage)
                         pauseIntent.putExtra(
                             Intent.EXTRA_KEY_EVENT,
                             KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PAUSE)
                         )
+
                         val pauseReleaseIntent = Intent(Intent.ACTION_MEDIA_BUTTON)
+                        pauseReleaseIntent.setPackage(spotifyPackage)
                         pauseReleaseIntent.putExtra(
                             Intent.EXTRA_KEY_EVENT,
                             KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_PAUSE)
