@@ -56,7 +56,7 @@ class AutoSpotifyService : Service() {
 
         // 2. ACCENDIAMO L'ORECCHIO (Registriamo il Receiver dinamicamente)
         val filter = IntentFilter().apply {
-            addAction(BluetoothDevice.ACTION_ACL_CONNECTED)
+            addAction(android.bluetooth.BluetoothA2dp.ACTION_CONNECTION_STATE_CHANGED)
             addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED)
         }
 
