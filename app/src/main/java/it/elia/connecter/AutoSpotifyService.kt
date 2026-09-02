@@ -20,7 +20,7 @@ class AutoSpotifyService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 
-        // 1. CREIAMO LA NOTIFICA (Obbligatoria per i Foreground Service)
+       //CREIAMO LA NOTIFICA
         val channelId = "AutoSpotifyChannel"
 
         // Su Android 8.0+ le notifiche hanno bisogno di un "Canale"
@@ -34,7 +34,7 @@ class AutoSpotifyService : Service() {
             manager.createNotificationChannel(channel)
         }
 
-        // Costruiamo l'aspetto della notifica
+        //aspetto della notifica
         val notification = NotificationCompat.Builder(this, channelId)
             .setContentTitle("AutoSpotify Attivo")
             .setContentText("In attesa di connettersi all'autoradio...")
@@ -42,39 +42,33 @@ class AutoSpotifyService : Service() {
             .setOngoing(true) // Rende la notifica fissa, l'utente non può strisciarla via
             .build()
 
-        // DICIAMO AD ANDROID: "Sono un servizio importante, ecco la mia notifica, non chiudermi!"
+        // Aumentiamo l'importanza della notifica
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            startForeground(
-                1,
-                notification,
-                ServiceInfo.FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE
-            )
+            startForeground(1, notification,ServiceInfo.FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE)
         } else {
-            // Per Android 13 e inferiori, la vecchia riga funziona perfettamente
+            // Per Android 13 e inferiori
             startForeground(1, notification)
         }
 
-        // 2. ACCENDIAMO L'ORECCHIO (Registriamo il Receiver dinamicamente)
         val filter = IntentFilter().apply {
             addAction(android.bluetooth.BluetoothA2dp.ACTION_CONNECTION_STATE_CHANGED)
             addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED)
         }
 
-        // Registriamo l'orecchio: ora ascolterà gli eventi di sistema finché il servizio è vivo
+        // Registriamo l'orecchio: ascolterà gli eventi di sistema finché il servizio è vivo
         registerReceiver(bluetoothReceiver, filter)
 
-        // START_STICKY dice ad Android: "Se per cause di forza maggiore mi chiudi, riavviami appena puoi"
+        // START_STICKY (se viene chiuso, viene riaperto il prima possibile)
         return START_STICKY
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        // Quando spegniamo il servizio, dobbiamo spegnere anche l'Orecchio per evitare errori
+        //spegnamo anche l'orecchio
         unregisterReceiver(bluetoothReceiver)
     }
 
     override fun onBind(intent: Intent?): IBinder? {
-        // I "Bound Service" sono un'altra cosa, a noi qui basta ritornare null
         return null
     }
 }

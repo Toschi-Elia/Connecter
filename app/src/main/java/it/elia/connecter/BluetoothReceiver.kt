@@ -21,7 +21,7 @@ class BluetoothReceiver : BroadcastReceiver() {
             // Per Android 13 e successivi: usiamo il nuovo metodo type-safe
             intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE, BluetoothDevice::class.java)
         } else {
-            // Per Android 12 e precedenti: usiamo il vecchio metodo e "sopprimiamo" l'avviso
+            // Per Android 12 e precedenti: vecchio metodo e "sopprimiamo" l'avviso
             @Suppress("DEPRECATION")
             intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE) as? BluetoothDevice
         }
@@ -40,13 +40,13 @@ class BluetoothReceiver : BroadcastReceiver() {
 
         if (device != null && hasPermission) {
 
-            // Confrontiamo l'indirizzo MAC al posto del nome, così se rinominiamo non si rompe
+            // Confrontiamo l'indirizzo MAC
             if (device.address == targetDeviceMac) {
 
                 val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
                 when (action) {
 
-                    // CASO 1: LA MACCHINA SI È CONNESSA (Profilo Audio A2DP)
+                    // dispositivo connesso (Profilo Audio A2DP)
                     android.bluetooth.BluetoothA2dp.ACTION_CONNECTION_STATE_CHANGED -> {
                         val state = intent.getIntExtra(
                             android.bluetooth.BluetoothProfile.EXTRA_STATE,
@@ -54,16 +54,13 @@ class BluetoothReceiver : BroadcastReceiver() {
                         )
 
                         if (state == android.bluetooth.BluetoothProfile.STATE_CONNECTED) {
-                            
-                            // Siccome aspettiamo il profilo Audio, l'audio Bluetooth è già pronto.
-                            // Possiamo fare tutto subito senza aspettare troppo
-                            
-                            // 1. Imposta il volume
+
+                            // Imposta il volume
                             val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
                             val targetVolume = sharedPrefs.getInt("TARGET_VOLUME", maxVolume)
                             audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, targetVolume, 0)
 
-                            // 2. Apri Spotify sulla playlist
+                            // Apertura Spotify sulla playlist
                             val targetPlaylistUri = sharedPrefs.getString("TARGET_PLAYLIST_URI", "spotify:collection:tracks")
                             val spotifyIntent = Intent(Intent.ACTION_VIEW, Uri.parse(targetPlaylistUri))
                             spotifyIntent.setPackage("com.spotify.music")
@@ -75,7 +72,7 @@ class BluetoothReceiver : BroadcastReceiver() {
                                 e.printStackTrace()
                             }
 
-                            // 3. Premi Play (un piccolo ritardo serve solo a dare il tempo a Spotify di aprirsi in RAM)
+                            // Premi Play, con delay per aprire spotify
                             android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
                                 try {
                                     val playIntent = Intent(Intent.ACTION_MEDIA_BUTTON)
@@ -97,19 +94,17 @@ class BluetoothReceiver : BroadcastReceiver() {
                                 } catch (e: Exception) {
                                     e.printStackTrace()
                                 }
-                            }, 1500) // Ridotto a 1.5s dato che l'audio BT è già pronto
+                            }, 1500)
                         }
                     }
 
-                    // CASO 2: LA MACCHINA SI È DISCONNESSA
+                    // Dispositivo disconnesso
                     BluetoothDevice.ACTION_ACL_DISCONNECTED -> {
 
-                        // Riportiamo il volume dei media a zero (muto) o a un valore minimo
+                        // volume dei media a zero (muto) o a un valore minimo
                         audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 0, 0)
 
                         // OPZIONALE: Invia il comando "Pausa" a Spotify
-                        // Spesso Spotify va in pausa da solo quando si scollega il Bluetooth,
-                        // ma se vuoi essere sicuro al 100%, puoi forzare la pausa così:
                         val pauseIntent = Intent(Intent.ACTION_MEDIA_BUTTON)
                         pauseIntent.setPackage("com.spotify.music")
                         pauseIntent.putExtra(
