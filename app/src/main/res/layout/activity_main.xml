@@ -11,6 +11,8 @@
         android:id="@+id/main"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
         android:orientation="vertical"
         android:padding="24dp"
         tools:context=".MainActivity">
@@ -18,13 +20,13 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Connecter"
-            android:textSize="36sp"
-            android:textStyle="bold"
-            android:gravity="center"
-            android:textColor="?attr/colorPrimary"
             android:layout_marginTop="32dp"
-            android:layout_marginBottom="48dp" />
+            android:layout_marginBottom="48dp"
+            android:gravity="center"
+            android:text="Connecter"
+            android:textColor="?attr/colorPrimary"
+            android:textSize="36sp"
+            android:textStyle="bold" />
 
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
@@ -36,24 +38,24 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="?attr/colorSurface"
                 android:orientation="vertical"
-                android:padding="20dp"
-                android:background="?attr/colorSurface">
+                android:padding="20dp">
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="1. Autoradio Bluetooth"
+                    android:textColor="?attr/colorPrimary"
                     android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="?attr/colorPrimary" />
+                    android:textStyle="bold" />
 
                 <Spinner
                     android:id="@+id/spinner"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:minHeight="48dp"
-                    android:layout_marginTop="12dp" />
+                    android:layout_marginTop="12dp"
+                    android:minHeight="48dp" />
 
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -68,17 +70,17 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="?attr/colorSurface"
                 android:orientation="vertical"
-                android:padding="20dp"
-                android:background="?attr/colorSurface">
+                android:padding="20dp">
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="2. Volume di riproduzione"
+                    android:textColor="?attr/colorPrimary"
                     android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="?attr/colorPrimary" />
+                    android:textStyle="bold" />
 
                 <SeekBar
                     android:id="@+id/seekBar"
@@ -99,38 +101,38 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="?attr/colorSurface"
                 android:orientation="vertical"
-                android:padding="20dp"
-                android:background="?attr/colorSurface">
+                android:padding="20dp">
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="3. Scegli la Playlist"
+                    android:textColor="?attr/colorPrimary"
                     android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="?attr/colorPrimary" />
+                    android:textStyle="bold" />
 
                 <Spinner
                     android:id="@+id/spinnerPlaylist"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:minHeight="48dp"
-                    android:layout_marginTop="12dp" />
-                    
+                    android:layout_marginTop="12dp"
+                    android:minHeight="48dp" />
+
                 <Button
                     android:id="@+id/btnAddCustomPlaylist"
                     style="?attr/borderlessButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
-                    android:text="+ Incolla link Spotify"
-                    android:textColor="?attr/colorPrimaryVariant"
-                    android:textSize="12sp"
                     android:layout_marginTop="4dp"
                     android:minHeight="0dp"
                     android:paddingTop="8dp"
-                    android:paddingBottom="8dp" />
+                    android:paddingBottom="8dp"
+                    android:text="+ Incolla link Spotify"
+                    android:textColor="?attr/colorPrimaryVariant"
+                    android:textSize="12sp" />
 
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -144,30 +146,30 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
             android:orientation="horizontal"
-            android:weightSum="2"
-            android:layout_marginBottom="16dp">
+            android:weightSum="2">
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnStartService"
                 android:layout_width="0dp"
                 android:layout_height="60dp"
-                android:layout_weight="1"
                 android:layout_marginEnd="8dp"
+                android:layout_weight="1"
+                android:backgroundTint="?attr/colorPrimary"
                 android:text="Attiva"
-                app:cornerRadius="12dp"
-                android:backgroundTint="?attr/colorPrimary" />
+                app:cornerRadius="12dp" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnStopService"
                 android:layout_width="0dp"
                 android:layout_height="60dp"
-                android:layout_weight="1"
                 android:layout_marginStart="8dp"
-                android:text="Disattiva"
-                app:cornerRadius="12dp"
+                android:layout_weight="1"
                 android:backgroundTint="?attr/colorSecondary"
-                android:textColor="?attr/colorOnSecondary" />
+                android:text="Disattiva"
+                android:textColor="?attr/colorOnSecondary"
+                app:cornerRadius="12dp" />
 
         </LinearLayout>
     </LinearLayout>
