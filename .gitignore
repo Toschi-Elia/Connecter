@@ -1,15 +1,52 @@
-*.iml
-.gradle
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
+# Built application & package files
+*.apk
+*.aar
+*.ap_
+*.aab
+
+# Java / Kotlin class & byte files
+*.class
+*.dex
+
+# Gradle build outputs & caches
+.gradle/
+build/
+**/build/
+
+# Local configuration file (contains private Android SDK path)
 local.properties
+
+# Log files
+*.log
+
+# Keystore & signing files (CRITICAL: never commit your private release keys)
+*.jks
+*.keystore
+signing.properties
+
+# Kotlin compiler daemon cache
+.kotlin/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Android Studio & IntelliJ IDEA
+*.iml
+.idea/caches/
+.idea/libraries/
+.idea/modules.xml
+.idea/workspace.xml
+.idea/navEditor.xml
+.idea/assetWizardSettings.xml
+.idea/deploymentTargetSelector.xml
+.idea/deviceManager.xml
+.idea/planningMode.xml
+.idea/shelf/
+
+# Android Studio capture & profiler files
+captures/
+.externalNativeBuild/
+.cxx/
